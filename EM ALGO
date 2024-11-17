@@ -1,0 +1,19 @@
+import numpy as np
+from sklearn.mixture import GaussianMixture
+
+# Simple dataset: 2D points
+data = np.array([
+    [1, 2], [2, 1], [1, 1], [2, 2],  # Cluster 1
+    [8, 8], [9, 9], [8, 9], [9, 8]   # Cluster 2
+])
+
+# Fit Gaussian Mixture Model using EM
+gmm = GaussianMixture(n_components=2, random_state=42)
+gmm.fit(data)
+
+# Predict cluster labels
+labels = gmm.predict(data)
+print("Cluster Labels:", labels)
+
+# Cluster centers
+print("Cluster Centers:\n", gmm.means_)
