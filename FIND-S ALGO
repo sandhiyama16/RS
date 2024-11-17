@@ -1,0 +1,28 @@
+import numpy as np
+
+# Given dataset
+data = [
+    ['Sunny', 'Warm', 'Normal', 'Strong', 'Warm', 'Same', 'Yes'],
+    ['Sunny', 'Warm', 'High', 'Strong', 'Warm', 'Same', 'Yes'],
+    ['Rainy', 'Cold', 'High', 'Strong', 'Warm', 'Change', 'No'],
+    ['Sunny', 'Warm', 'High', 'Strong', 'Cool', 'Change', 'Yes']
+]
+
+# Convert dataset to numpy array for easier manipulation
+data = np.array(data)
+
+# Initialize the most specific hypothesis with the first positive example
+most_specific_hypothesis = data[0][:6]
+
+# Iterate through the dataset
+for example in data:
+    if example[-1] == 'Yes':  # If the example is a positive instance
+        for i in range(len(most_specific_hypothesis)):
+            # If the current value is not the same as the hypothesis, generalize it
+            if most_specific_hypothesis[i] != example[i]:
+                most_specific_hypothesis[i] = '?'
+
+# Output the most specific hypothesis
+print("Most Specific Hypothesis:", most_specific_hypothesis)
+.
+
