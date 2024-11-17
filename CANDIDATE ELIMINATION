@@ -1,0 +1,48 @@
+import pandas as pd
+
+def candidate_elimination(file_path):
+    # Load the dataset
+    data = pd.read_csv(file_path)
+    concepts = data.iloc[:, :-1].values  # Features
+    target = data.iloc[:, -1].values  # Labels (Yes/No)
+
+    # Initialize the specific and general hypotheses
+    num_features = concepts.shape[1]
+    specific_hypothesis = ['?' for _ in range(num_features)]
+    general_hypothesis = [['?' for _ in range(num_features)]]
+
+    for i, instance in enumerate(concepts):
+        if target[i] == 'Yes':  # Positive example
+            for j in range(num_features):
+                if specific_hypothesis[j] == '?':
+                    specific_hypothesis[j] = instance[j]
+                elif specific_hypothesis[j] != instance[j]:
+                    specific_hypothesis[j] = '?'
+            general_hypothesis = [gh for gh in general_hypothesis if all(
+                gh[k] == '?' or gh[k] == instance[k] for k in range(num_features)
+            )]
+        else:  # Negative example
+            new_general_hypothesis = []
+            for gh in general_hypothesis:
+                for j in range(num_features):
+                    if gh[j] == '?':
+                        for value in set(concepts[:, j]):
+                            if value != instance[j]:
+                                new_gh = gh[:]
+                                new_gh[j] = value
+                                new_general_hypothesis.append(new_gh)
+            general_hypothesis = [
+                gh for gh in new_general_hypothesis if all(
+                    gh[k] == '?' or gh[k] == specific_hypothesis[k] or specific_hypothesis[k] == '?'
+                    for k in range(num_features)
+                )
+            ]
+
+    print("Final Specific Hypothesis:", specific_hypothesis)
+    print("Final General Hypothesis:", general_hypothesis)
+
+# Path to the CSV file
+file_path = 'training_data.csv'
+
+# Run the Candidate-Elimination algorithm
+candidate_elimination(file_path)
