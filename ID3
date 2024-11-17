@@ -1,0 +1,33 @@
+from sklearn.datasets import load_iris
+from sklearn.tree import DecisionTreeClassifier, export_text
+from sklearn.model_selection import train_test_split
+import numpy as np
+
+# Load an example dataset (Iris dataset)
+iris = load_iris()
+X = iris.data
+y = iris.target
+feature_names = iris.feature_names
+target_names = iris.target_names
+
+# Split the dataset into training and testing data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Build a decision tree classifier using the ID3 algorithm (criterion="entropy")
+clf = DecisionTreeClassifier(criterion="entropy", random_state=42)
+clf.fit(X_train, y_train)
+
+# Display the decision tree structure
+tree_rules = export_text(clf, feature_names=feature_names)
+print("Decision Tree Rules:")
+print(tree_rules)
+
+# Evaluate the model on the test data
+accuracy = clf.score(X_test, y_test)
+print(f"\nAccuracy on the test data: {accuracy:.2f}")
+
+# Classify a new sample
+new_sample = np.array([[5.9, 3.0, 5.1, 1.8]])  # Example: dimensions of a new iris flower
+predicted_class = clf.predict(new_sample)
+print("\nClassifying new sample:", new_sample)
+print("Predicted class:", target_names[predicted_class[0]])
