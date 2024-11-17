@@ -1,0 +1,41 @@
+import numpy as np
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+def relu(x):
+    return np.maximum(0, x)
+w1 = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]])
+b1 = np.array([0.7, 0.8, 0.9])
+w2 = np.array([[0.9, 0.8, 0.7]])
+b2 = np.array([0.1])
+x = np.array([1, 2])
+target_output = 0.5
+learning_rate = 0.1
+epochs = 1000
+for epoch in range(epochs):
+    z1 = np.dot(w1, x) + b1
+    a1 = relu(z1)
+    z2 = np.dot(w2, a1) + b2
+    a2 = sigmoid(z2)
+    loss = (a2 - target_output) ** 2 / 2
+    dloss_da2 = a2 - target_output
+    da2_dz2 = a2 * (1 - a2)
+    dz2_dw2 = a1
+    dz2_db2 = 1
+    dloss_dw2 = dloss_da2 * da2_dz2 * dz2_dw2
+    dloss_db2 = dloss_da2 * da2_dz2 * dz2_db2
+    da2_dz1 = w2.T
+    dz1_dw1 = x
+    dz1_db1 = 1
+    dloss_dz1 = np.dot(da2_dz1, dloss_da2 * da2_dz2)
+    dloss_dw1 = np.outer(dloss_dz1 * (z1 > 0), dz1_dw1)
+    dloss_db1 = dloss_dz1 * (z1 > 0) * dz1_db1
+    w1 -= learning_rate * dloss_dw1
+    b1 -= learning_rate * dloss_db1.sum(axis=0)
+    w2 -= learning_rate * dloss_dw2
+    b2 -= learning_rate * dloss_db2.sum()
+z1 = np.dot(w1, x) + b1
+a1 = relu(z1)
+z2 = np.dot(w2, a1) + b2
+a2 = sigmoid(z2)
+output = a2
+print("Output value after training:", output)
