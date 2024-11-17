@@ -1,0 +1,55 @@
+import random
+
+def fitness_function(individual):
+    return sum(individual)
+
+def crossover(parent1, parent2):
+    crossover_point = random.randint(1, len(parent1) - 1)
+    child1 = parent1[:crossover_point] + parent2[crossover_point:]
+    child2 = parent2[:crossover_point] + parent1[crossover_point:]
+    return child1, child2
+
+def mutate(individual):
+    mutation_point = random.randint(0, len(individual) - 1)
+    individual[mutation_point] = random.randint(0, 100)
+    return individual
+
+def genetic_algorithm():
+    population_size = 100
+    crossover_probability = 0.8
+    mutation_probability = 0.2
+    num_generations = 100
+
+    population = [[random.randint(0, 100) for _ in range(10)] for _ in range(population_size)]
+
+    for generation in range(num_generations):
+        fitnesses = [fitness_function(individual) for individual in population]
+        parents = [population[i] for i in roulette_wheel_selection(fitnesses, population_size // 2)]
+        offspring = []
+        for _ in range(population_size // 2):
+            parent1, parent2 = random.sample(parents, 2)
+            if random.random() < crossover_probability:
+                child1, child2 = crossover(parent1, parent2)
+                offspring.extend([child1, child2])
+            else:
+                offspring.extend([parent1, parent2])
+        for i in range(len(offspring)):
+            if random.random() < mutation_probability:
+                offspring[i] = mutate(offspring[i])
+        population = sorted(population + offspring, key=fitness_function, reverse=True)[:population_size]
+    return max(population, key=fitness_function)
+
+def roulette_wheel_selection(fitnesses, num_parents):
+    total_fitness = sum(fitnesses)
+    selection_probs = [fitness / total_fitness for fitness in fitnesses]
+    cum_probs = [sum(selection_probs[:i+1]) for i in range(len(selection_probs))]
+    parents = []
+    for _ in range(num_parents):
+        r = random.random()
+        for i, cum_prob in enumerate(cum_probs):
+            if r < cum_prob:
+                parents.append(i)
+                break
+    return parents
+
+print(genetic_algorithm())
